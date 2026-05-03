@@ -24,6 +24,7 @@ data class BeforeNewsResponse(
 data class Story(
     val id: Int,
     val title: String?,
+    val hint: String?,
     val images: List<String>?,
     val type: Int?,
     val ga_prefix: String?
@@ -33,6 +34,7 @@ data class Story(
 data class TopStory(
     val id: Int,
     val title: String?,
+    val hint: String?,
     val image: String?,
     val type: Int?,
     val ga_prefix: String?
