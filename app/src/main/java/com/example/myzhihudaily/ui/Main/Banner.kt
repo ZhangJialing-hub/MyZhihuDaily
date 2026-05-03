@@ -1,4 +1,4 @@
-package com.example.myzhihudaily.ui.theme
+package com.example.myzhihudaily.ui.Main
 
 /**
  * description:  ToDo:  实现首页Banner

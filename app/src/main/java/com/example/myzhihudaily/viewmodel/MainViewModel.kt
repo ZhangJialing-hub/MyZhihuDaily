@@ -68,4 +68,30 @@ class MainViewModel : ViewModel() {
                 }
             })
     }
+
+    //2026/5/3 22：19 为实现首页刷新等新增
+    //合并后的新闻列表
+    private val _newsList = MutableLiveData<List<LatestNewsResponse>>()
+    val newsList: LiveData<List<LatestNewsResponse>> = _newsList
+
+    //刷新状态
+    private val _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
+    //是否正在加载更多
+    private val _isLoadMore = MutableLiveData(false)
+    val isLoadMore: LiveData<Boolean> = _isLoadMore
+
+    //下拉刷新
+    fun refresh() {
+        _isRefreshing.value = true
+        getLatestNews()
+    }
+
+    //加载更多
+    fun loadMore() {
+        _isLoadMore.value = true
+        val lastDate = _latestNews.value?.date ?: _beforeNews.value?.date
+        lastDate?.let { getBeforeNews(it) }
+    }
 }
