@@ -17,6 +17,9 @@ package com.example.myzhihudaily.utils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 object DateUtil {
 
@@ -39,4 +42,18 @@ object DateUtil {
         }
         return "${date.year}年${date.monthValue}月${date.dayOfMonth}日 $weekday"
     }
+    fun getPreviousDay(dateStr: String?): String? {
+        if (dateStr.isNullOrBlank()) return null
+        return try {
+            val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+            val date = sdf.parse(dateStr)
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.add(Calendar.DAY_OF_MONTH, -1)
+            sdf.format(calendar.time)
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
+

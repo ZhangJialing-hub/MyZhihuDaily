@@ -43,8 +43,8 @@ object NetRepository {
     }
 
      //获取新闻详情
-    fun getNewsDetail(id: Int): Observable<NewsDetailResponse> {
-        return zhihuApi.getNewsDetail(id)
+    fun getNewsDetail(id: Int): Observable<LatestNewsResponse> {
+        return zhihuApi.getLatestNews()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

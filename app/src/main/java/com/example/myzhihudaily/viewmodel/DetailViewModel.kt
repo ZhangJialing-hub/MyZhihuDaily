@@ -11,18 +11,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myzhihudaily.model.NewsDetailResponse
+import com.example.myzhihudaily.model.LatestNewsResponse
 import com.example.myzhihudaily.model.LongCommentsResponse
 import com.example.myzhihudaily.model.ShortCommentsResponse
 import com.example.myzhihudaily.repository.NetRepository
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import android.util.Log
 
 class DetailViewModel : ViewModel() {
 
     //新闻详情
-    private val _newsDetail = MutableLiveData<NewsDetailResponse>()
-    val newsDetail: LiveData<NewsDetailResponse>
+    private val _newsDetail = MutableLiveData<LatestNewsResponse>()
+    val newsDetail: LiveData<LatestNewsResponse>
         get() = _newsDetail
 
     //长评论
@@ -36,20 +39,17 @@ class DetailViewModel : ViewModel() {
         get() = _shortComments
 
     //加载新闻详情
+
     fun loadDetail(id: Int) {
         NetRepository.getNewsDetail(id)
-            .subscribe(object : Observer<NewsDetailResponse> {
-                override fun onSubscribe(d: Disposable) {}
-
-                override fun onError(e: Throwable) {
-                    Log.d("DetailViewModel", "详情错误：${e.message}")
-                }
-
-                override fun onComplete() {}
-
-                override fun onNext(t: NewsDetailResponse) {
-                    _newsDetail.postValue(t)
-                }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                // onNext
+                _newsDetail.postValue(it)
+            }, {
+                // onError
+                Log.d("DetailViewModel", "详情错误：${it.message}")
             })
     }
 
@@ -89,3 +89,5 @@ class DetailViewModel : ViewModel() {
             })
     }
 }
+
+

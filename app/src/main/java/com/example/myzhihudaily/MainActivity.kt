@@ -1,47 +1,78 @@
 package com.example.myzhihudaily
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.myzhihudaily.ui.detail.DetailScreen
+import com.example.myzhihudaily.ui.Main.HomeScreen
 import com.example.myzhihudaily.ui.theme.MyZhihuDailyTheme
+import com.example.myzhihudaily.viewmodel.MainViewModel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             MyZhihuDailyTheme {
-                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppNavigation()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
+
 @Composable
-fun GreetingPreview() {
-    MyZhihuDailyTheme {
-        Greeting("Android")
+fun AppNavigation() {
+    val navController = rememberNavController()
+    val mainViewModel: MainViewModel =
+        androidx.lifecycle.viewmodel.compose.viewModel()
+
+    val allNewsIds = mainViewModel.newsList.value.flatMap { dayNews ->
+        dayNews.stories?.map { it.id } ?: emptyList()
+    }
+
+    NavHost(navController = navController, startDestination = "home") {
+
+        // 首页
+        composable("home") {
+            HomeScreen(onNewsClick = { id ->
+                navController.navigate("detail/$id")
+            })
+        }
+
+        // 详情页
+        composable(
+            route = "detail/{newsId}",
+            arguments = listOf(navArgument("newsId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val newsId = backStackEntry.arguments?.getInt("newsId") ?: 0
+            DetailScreen(
+                newsId = newsId,
+                allNewsIds = allNewsIds,
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

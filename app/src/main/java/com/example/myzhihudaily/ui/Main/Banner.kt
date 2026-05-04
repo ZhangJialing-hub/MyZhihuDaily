@@ -6,7 +6,7 @@ package com.example.myzhihudaily.ui.Main
  * email:3507386031@qq.com
  * date:2026/5/3   13：06
  */
-
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,11 +37,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.myzhihudaily.model.TopStory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Banner(topStories: List<TopStory>, onBannerClick: (Int) -> Unit) {
     if (topStories.isEmpty()) return
@@ -71,20 +73,23 @@ fun Banner(topStories: List<TopStory>, onBannerClick: (Int) -> Unit) {
     )
     {
         HorizontalPager(state = pagerState) { page ->
-            val realIndex = page % topStories.size
+            val realIndex = page% topStories.size
             val story = topStories[realIndex]
 
             // 整个的容器
             Box(
                 modifier = Modifier.fillMaxSize()) {
 
-                Image(
-                    painter = rememberAsyncImagePainter(story.image),
-                    contentDescription = story.title,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { onBannerClick(story.id) },
-                    contentScale = ContentScale.Crop
+                GlideImage(
+                        model = story.image,
+                contentDescription = story.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { Log.d("Banner", "点击了新闻 id = ${story.id}")
+                        onBannerClick(story.id) },
+                contentScale = ContentScale.Crop
                 )
 
             //标题容器

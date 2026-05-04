@@ -16,14 +16,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.myzhihudaily.model.LatestNewsResponse
 import com.example.myzhihudaily.utils.DateUtil
 import com.example.myzhihudaily.utils.ShareUtil
 import com.example.myzhihudaily.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-import com.example.myzhihudaily.ui.Main.NewsListItem
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
 
-@OptIn(ExperimentalMaterial3Api::class)  // 只保留这一个
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
@@ -34,6 +35,8 @@ fun HomeScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val pullRefreshState = rememberPullToRefreshState()
+
+    val lazyListState = rememberLazyListState()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("知乎日报") }) }
@@ -49,11 +52,13 @@ fun HomeScreen(
                 .padding(padding)
         ) {
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier.fillMaxSize()
             ) {
                 // 轮播 Banner
                 newsList.firstOrNull()?.top_stories?.let {
-                    item { Banner(it, onNewsClick) }
+                    item { Banner(it, onBannerClick=onNewsClick) }
+
                 }
 
                 // 日期分组 + 新闻列表
@@ -66,14 +71,14 @@ fun HomeScreen(
                     }
 
                     val stories = dayNews.stories ?: emptyList()
-                    items(newsList.story) { story ->
+                    items(stories) { story ->
                         NewsListItem(
                             story = story,
                             onClick = { onNewsClick(story.id) },
                             onShare = {
                                 ShareUtil.shareNews(
                                     context,
-                                    story.title,
+                                    story.title?:"暂无信息",
                                     "https://daily.zhihu.com/story/${story.id}"
                                 )
                             }
@@ -82,6 +87,13 @@ fun HomeScreen(
 
                 }
             }
-        }
+            LaunchedEffect(lazyListState.isScrollInProgress) {
+                val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                val totalItemCount = lazyListState.layoutInfo.totalItemsCount
+
+                // 滑到倒数第2条时触发加载更多
+                if (lastVisibleIndex >= totalItemCount - 2 && !isRefreshing) {
+                    viewModel.loadMore()
+                }
     }
-}
+}}}

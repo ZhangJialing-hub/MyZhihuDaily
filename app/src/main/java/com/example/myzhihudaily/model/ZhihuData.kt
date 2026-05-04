@@ -1,5 +1,7 @@
 package com.example.myzhihudaily.model
 
+import retrofit2.http.Url
+
 /**
  * description:  ToDo:存放知乎api包含的数据
  * author:zjl
@@ -26,6 +28,7 @@ data class Story(
     val title: String?,
     val hint: String?,
     val images: List<String>?,
+    val url: String,
     val type: Int?,
     val ga_prefix: String?
 )
@@ -36,16 +39,17 @@ data class TopStory(
     val title: String?,
     val hint: String?,
     val image: String?,
+    val url: String,
     val type: Int?,
     val ga_prefix: String?
 )
 
 //额外信息
 data class NewsDetailResponse(
-    val long_comments: Int?,
-    val popularity: Int?,
-    val short_comments: Int?,
-    val comments: Int?
+    val comments: Int?,              // 总评论数
+    val long_comments: Int?,         // 长评论数
+    val popularity: Int?,            // 热度
+    val short_comments: Int?         // 短评论数
 )
 
 //长评论

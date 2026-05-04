@@ -13,13 +13,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.myzhihudaily.model.Story
 import com.bumptech.glide.integration.compose.GlideImage
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Share
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.example.myzhihudaily.model.Story
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun NewsListItem(
@@ -38,9 +35,9 @@ fun NewsListItem(
             model = story.images?.firstOrNull(),
             contentDescription = story.title,
             modifier = Modifier
-                .size(80.dp)
+                .size(100.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
 
         Text(
@@ -50,11 +47,6 @@ fun NewsListItem(
                 .padding(start = 12.dp)
         )
 
-        IconButton(onClick = onShare) {
-            Icon(
-                Icons.Outlined.Share,
-                contentDescription = "分享"
-            )
-        }
+
     }
 }
