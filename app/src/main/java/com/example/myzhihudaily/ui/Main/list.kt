@@ -22,7 +22,7 @@ import com.example.myzhihudaily.model.Story
 fun NewsListItem(
     story: Story,
     onClick: () -> Unit,
-    onShare: () -> Unit
+    onShare: () -> Unit,
 ) {
     Row(
         modifier = Modifier

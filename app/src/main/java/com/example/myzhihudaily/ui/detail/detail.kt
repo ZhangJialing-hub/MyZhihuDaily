@@ -4,6 +4,7 @@ package com.example.myzhihudaily.ui.detail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,8 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.myzhihudaily.utils.ShareUtil
 import com.example.myzhihudaily.viewmodel.DetailViewModel
-import com.example.myzhihudaily.viewmodel.MainViewModel
-@OptIn(ExperimentalMaterial3Api::class)
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+@OptIn(ExperimentalMaterial3Api::class,ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailScreen(
     newsId: Int,
@@ -37,7 +46,6 @@ fun DetailScreen(
     viewModel: DetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val context = LocalContext.current
-    val allNewsList by viewModel.currentList.observeAsState(emptyList())
     LaunchedEffect(newsId) {
         viewModel.loadDetail(newsId)
         viewModel.loadLongComments(newsId)
@@ -91,14 +99,11 @@ fun DetailScreen(
                     }
                 },
                 update = { webView ->
-                    // 👇 就用你自己定义的 allNewsIds！！！
-                    val targetStory = allNewsIds
-                        .flatMap { it.stories.orEmpty() }
-                        .firstOrNull { it.id == newsId }
-
-                    // 完全用你自己的真实URL，不拼接！
-                    targetStory?.url?.let {
-                        webView.loadUrl(it)
+                    newsDetail?.let { data ->
+                        val targetStory = data.stories?.firstOrNull { it.id == newsId }
+                        targetStory?.let { story ->
+                            webView.loadUrl(story.url)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().weight(1f)
@@ -106,14 +111,44 @@ fun DetailScreen(
             if (allComments.isNotEmpty()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("评论", style = MaterialTheme.typography.titleMedium)
+
                     allComments.forEach { comment ->
-                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                            Text(comment.author ?: "匿名", style = MaterialTheme.typography.titleSmall)
-                            Text(comment.content ?: "", style = MaterialTheme.typography.bodyMedium)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            androidx.compose.foundation.layout.Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                            ) {
+                                GlideImage(
+                                    model = comment.avatar,
+                                    contentDescription = "头像"
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    comment.author ?: "匿名",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(
+                                    comment.content ?: "",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
+        }
+
