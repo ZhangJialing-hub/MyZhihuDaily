@@ -41,7 +41,7 @@ class DetailViewModel : ViewModel() {
     //加载新闻详情
 
     fun loadDetail(id: Int) {
-        NetRepository.getNewsDetail(id)
+        NetRepository.getLatestNews(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

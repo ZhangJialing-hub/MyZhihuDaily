@@ -28,7 +28,7 @@ object NetRepository {
     private val zhihuApi= retrofit.create(ZhihuApi::class.java)
 
      //获取最新日报列表
-    fun getLatestNews(): Observable<LatestNewsResponse> {
+    fun getLatestNews(id: Int): Observable<LatestNewsResponse> {
         return zhihuApi.getLatestNews()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -41,7 +41,7 @@ object NetRepository {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-     //获取新闻详情
+     //获取新闻额外信息
     fun getNewsDetail(id: Int): Observable<LatestNewsResponse> {
         return zhihuApi.getLatestNews()
             .subscribeOn(Schedulers.io())

@@ -55,7 +55,7 @@ class MainViewModel : ViewModel() {
     //获取最新数据
     fun getLatestNews() {
         _isRefreshing.value = true
-        NetRepository.getLatestNews()
+        NetRepository.getLatestNews(0)
             .subscribe(object : Observer<LatestNewsResponse> {
                 override fun onSubscribe(d: Disposable) {}
 

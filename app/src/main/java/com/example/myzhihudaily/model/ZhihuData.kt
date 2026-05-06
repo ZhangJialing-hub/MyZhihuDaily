@@ -46,10 +46,10 @@ data class TopStory(
 
 //额外信息
 data class NewsDetailResponse(
-    val comments: Int?,              // 总评论数
-    val long_comments: Int?,         // 长评论数
-    val popularity: Int?,            // 热度
-    val short_comments: Int?         // 短评论数
+    val comments: Int?,
+    val long_comments: Int?,
+    val popularity: Int?,
+    val short_comments: Int?
 )
 
 //长评论
