@@ -27,7 +27,9 @@ class DetailViewModel : ViewModel() {
     private val _newsDetail = MutableLiveData<LatestNewsResponse>()
     val newsDetail: LiveData<LatestNewsResponse>
         get() = _newsDetail
-
+    private val _newsExtraInfo = MutableLiveData<NewsDetailResponse>()
+    val newsExtraInfo: LiveData<NewsDetailResponse> =
+        _newsExtraInfo
     //长评论
     private val _longComments = MutableLiveData<LongCommentsResponse>()
     val longComments: LiveData<LongCommentsResponse>
@@ -39,7 +41,6 @@ class DetailViewModel : ViewModel() {
         get() = _shortComments
 
     //加载新闻详情
-
     fun loadDetail(id: Int) {
         NetRepository.getLatestNews(id)
             .subscribeOn(Schedulers.io())
@@ -52,7 +53,16 @@ class DetailViewModel : ViewModel() {
                 Log.d("DetailViewModel", "详情错误：${it.message}")
             })
     }
-
+    fun loadNewsExtraInfo(id: Int) {
+        NetRepository.getNewsDetail(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ extraData ->
+                _newsExtraInfo.postValue(extraData)
+            }, {
+                Log.d("DetailViewModel", "额外信息错误：${it.message}")
+            })
+    }
     //加载长评论
     fun loadLongComments(id: Int) {
         NetRepository.getLongComment(id)

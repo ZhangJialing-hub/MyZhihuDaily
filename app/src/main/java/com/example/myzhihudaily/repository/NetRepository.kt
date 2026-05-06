@@ -18,7 +18,7 @@ import com.example.myzhihudaily.model.LatestNewsResponse
 import com.example.myzhihudaily.model.BeforeNewsResponse
 import com.example.myzhihudaily.model.LongCommentsResponse
 import com.example.myzhihudaily.model.ShortCommentsResponse
-
+import com.example.myzhihudaily.model.NewsDetailResponse
 object NetRepository {
     private val retrofit=Retrofit.Builder()
             .baseUrl("https://news-at.zhihu.com/")
@@ -42,8 +42,8 @@ object NetRepository {
     }
 
      //获取新闻额外信息
-    fun getNewsDetail(id: Int): Observable<LatestNewsResponse> {
-        return zhihuApi.getLatestNews()
+    fun getNewsDetail(id: Int): Observable<NewsDetailResponse> {
+        return zhihuApi.getNewsDetail(0)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
