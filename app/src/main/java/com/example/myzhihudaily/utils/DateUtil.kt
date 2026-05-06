@@ -30,7 +30,6 @@ object DateUtil {
         } catch (e: Exception) {
             return ""
         }
-
         val weekday = when (date.dayOfWeek) {
             DayOfWeek.SUNDAY -> "星期日"
             DayOfWeek.MONDAY -> "星期一"

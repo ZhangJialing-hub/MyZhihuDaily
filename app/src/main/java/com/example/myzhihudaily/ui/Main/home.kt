@@ -28,14 +28,13 @@ import androidx.compose.runtime.LaunchedEffect
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    onNewsClick: (Int) -> Unit
+    onNewsClick: (Int, String) -> Unit
 ) {
     val newsList by viewModel.newsList.observeAsState(emptyList())
     val isRefreshing by viewModel.isRefreshing.observeAsState(false)
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val pullRefreshState = rememberPullToRefreshState()
-
     val lazyListState = rememberLazyListState()
 
     Scaffold(
@@ -56,12 +55,16 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 // 轮播 Banner
-                newsList.firstOrNull()?.top_stories?.let {
-                    item { Banner(it, onBannerClick=onNewsClick) }
-
+                val firstDayNews = newsList.firstOrNull()
+                val todayDate = firstDayNews?.date ?: ""
+                firstDayNews?.top_stories?.let {
+                    item {
+                        Banner(it, onBannerClick = { id ->
+                            onNewsClick(id, todayDate)
+                        })
+                    }
                 }
-
-                // 日期分组 + 新闻列表
+                //新闻列表
                 newsList.forEach { dayNews ->
                     item {
                         Text(
@@ -74,7 +77,7 @@ fun HomeScreen(
                     items(stories) { story ->
                         NewsListItem(
                             story = story,
-                            onClick = { onNewsClick(story.id) },
+                            onClick = { onNewsClick(story.id,dayNews.date?:"") },
                             onShare = {
                                 ShareUtil.shareNews(
                                     context,
@@ -87,11 +90,10 @@ fun HomeScreen(
 
                 }
             }
+            // 加载更多
             LaunchedEffect(lazyListState.isScrollInProgress) {
                 val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                 val totalItemCount = lazyListState.layoutInfo.totalItemsCount
-
-                // 滑到倒数第2条时触发加载更多
                 if (lastVisibleIndex >= totalItemCount - 2 && !isRefreshing) {
                     viewModel.loadMore()
                 }

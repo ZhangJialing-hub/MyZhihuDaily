@@ -41,27 +41,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import android.util.Log
+
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailScreen(
     newsId: Int,
+    newsDate: String,
     allNewsIds: List<Int>,
     onBack: () -> Unit,
     viewModel: DetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val context = LocalContext.current
-    LaunchedEffect(newsId) {
-        viewModel.loadDetail(newsId)
+    LaunchedEffect(newsId,newsDate) {
+        Log.d("DEBUG", "收到的日期：$newsDate")
+        val todayDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+        Log.d("DEBUG", "今天的日期：$todayDate")
+        if (newsDate == todayDate) {
+            viewModel.loadDetail(newsId)
+        } else {
+            viewModel.loadBeforeNews(newsDate)
+        }
         viewModel.loadLongComments(newsId)
         viewModel.loadShortComments(newsId)
         viewModel.loadNewsExtraInfo(newsId)
     }
-
     val newsDetail by viewModel.newsDetail.observeAsState()
+    val beforeNewsDetail by viewModel.beforeNewsDetail.observeAsState()
     val newsExtraInfo by viewModel.newsExtraInfo.observeAsState()
     val longComments by viewModel.longComments.observeAsState()
     val shortComments by viewModel.shortComments.observeAsState()
-
     val allComments = buildList {
         longComments?.comments?.let { addAll(it) }
         shortComments?.comments?.let { addAll(it) }
@@ -105,16 +117,19 @@ fun DetailScreen(
                     }
                 },
                 update = { webView ->
-                    newsDetail?.let { data ->
-                        val targetStory = data.stories?.firstOrNull { it.id == newsId }
-                        targetStory?.let { story ->
-                            webView.loadUrl(story.url)
+                    var targetUrl: String? = null
+                    newsDetail?.stories?.firstOrNull { it.id == newsId }?.let {
+                        targetUrl = it.url
+                    }
+                    if (targetUrl.isNullOrEmpty()) {
+                        beforeNewsDetail?.stories?.firstOrNull { it.id == newsId }?.let {
+                            targetUrl = it.url
                         }
                     }
+                    targetUrl?.let { webView.loadUrl(it) }
                 },
                 modifier = Modifier.fillMaxWidth().height(300.dp)
             )
-            // 新闻 总点赞、总评论数 展示
             newsExtraInfo?.let { detail ->
                 Row(
                     modifier = Modifier
@@ -152,7 +167,7 @@ fun DetailScreen(
                                     .padding(vertical = 8.dp),
                                 verticalAlignment = Alignment.Top
                             ) {
-                                androidx.compose.foundation.layout.Box(
+                                Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(CircleShape)

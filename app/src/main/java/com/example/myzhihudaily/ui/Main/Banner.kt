@@ -6,8 +6,8 @@ package com.example.myzhihudaily.ui.Main
  * email:3507386031@qq.com
  * date:2026/5/3   13：06
  */
+
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsDraggedAsState

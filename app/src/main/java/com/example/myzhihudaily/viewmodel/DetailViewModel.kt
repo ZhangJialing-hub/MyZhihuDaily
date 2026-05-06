@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myzhihudaily.model.NewsDetailResponse
 import com.example.myzhihudaily.model.LatestNewsResponse
+import com.example.myzhihudaily.model.BeforeNewsResponse
 import com.example.myzhihudaily.model.LongCommentsResponse
 import com.example.myzhihudaily.model.ShortCommentsResponse
 import com.example.myzhihudaily.repository.NetRepository
@@ -27,6 +28,12 @@ class DetailViewModel : ViewModel() {
     private val _newsDetail = MutableLiveData<LatestNewsResponse>()
     val newsDetail: LiveData<LatestNewsResponse>
         get() = _newsDetail
+
+    private val _beforeNewsDetail = MutableLiveData<BeforeNewsResponse>()
+    val beforeNewsDetail: LiveData<BeforeNewsResponse>
+        get() = _beforeNewsDetail
+
+    //新闻额外信息
     private val _newsExtraInfo = MutableLiveData<NewsDetailResponse>()
     val newsExtraInfo: LiveData<NewsDetailResponse> =
         _newsExtraInfo
@@ -51,6 +58,18 @@ class DetailViewModel : ViewModel() {
             }, {
                 // onError
                 Log.d("DetailViewModel", "详情错误：${it.message}")
+            })
+    }
+    fun loadBeforeNews(date: String) {
+        NetRepository
+            .getBeforeNews(date)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                _beforeNewsDetail.postValue(it)
+            }, {
+                Log
+                    .d("DetailVM", "加载历史新闻失败：${it.message}")
             })
     }
     fun loadNewsExtraInfo(id: Int) {

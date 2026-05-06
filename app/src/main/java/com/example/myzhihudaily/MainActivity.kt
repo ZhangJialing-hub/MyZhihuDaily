@@ -57,19 +57,25 @@ fun AppNavigation() {
 
         // 首页
         composable("home") {
-            HomeScreen(onNewsClick = { id ->
-                navController.navigate("detail/$id")
+            HomeScreen(onNewsClick = { id,date->
+                navController.navigate("detail/$id/$date")
             })
         }
 
         // 详情页
         composable(
-            route = "detail/{newsId}",
-            arguments = listOf(navArgument("newsId") { type = NavType.IntType })
+            route = "detail/{newsId}/{newsDate}",
+            arguments = listOf(
+                navArgument("newsId") { type = NavType.IntType },
+                navArgument("newsDate") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val newsId = backStackEntry.arguments?.getInt("newsId") ?: 0
+            val newsDate = backStackEntry.arguments?.getString("newsDate") ?: ""
+
             DetailScreen(
                 newsId = newsId,
+                newsDate = newsDate,
                 allNewsIds = allNewsIds,
                 onBack = { navController.popBackStack() }
             )
