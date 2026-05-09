@@ -44,9 +44,6 @@ class MainViewModel : ViewModel() {
     private val _isLoadMore = MutableLiveData(false)
     val isLoadMore: LiveData<Boolean> = _isLoadMore
 
-    // 记录上拉加载当前到哪天了
-    private var currentOldDate = MutableLiveData<String?>()
-
     //ViewModel的初始化方法
     init {
         getLatestNews()

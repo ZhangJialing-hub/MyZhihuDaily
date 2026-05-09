@@ -45,7 +45,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.util.Log
-
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailScreen(
@@ -56,6 +57,7 @@ fun DetailScreen(
     viewModel: DetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val context = LocalContext.current
+    var forceRefresh = remember { mutableStateOf(0) }
     LaunchedEffect(newsId,newsDate) {
         Log.d("DEBUG", "收到的日期：$newsDate")
         val todayDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
@@ -74,6 +76,7 @@ fun DetailScreen(
     val newsExtraInfo by viewModel.newsExtraInfo.observeAsState()
     val longComments by viewModel.longComments.observeAsState()
     val shortComments by viewModel.shortComments.observeAsState()
+    forceRefresh.value=forceRefresh.value+1
     val allComments = buildList {
         longComments?.comments?.let { addAll(it) }
         shortComments?.comments?.let { addAll(it) }
@@ -109,10 +112,14 @@ fun DetailScreen(
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            if (forceRefresh.value>0)
             AndroidView(
                 factory = { ctx ->
                     WebView(ctx).apply {
                         settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.databaseEnabled = true
+                        settings.loadsImagesAutomatically = true
                         webViewClient = WebViewClient()
                     }
                 },
@@ -126,8 +133,15 @@ fun DetailScreen(
                             targetUrl = it.url
                         }
                     }
-                    targetUrl?.let { webView.loadUrl(it) }
+                    targetUrl?.let { url ->
+                        webView.stopLoading() // 先停止当前加载
+                        webView.loadUrl(url)  // 再重新加载
+                    } ?: run {
+                        // 如果 URL 为空，清空 WebView 避免显示旧内容
+                        webView.loadData("<html><body></body></html>", "text/html", "utf-8")
+                    }
                 },
+
                 modifier = Modifier.fillMaxWidth().height(300.dp)
             )
             newsExtraInfo?.let { detail ->

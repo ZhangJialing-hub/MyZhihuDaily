@@ -27,14 +27,14 @@ object NetRepository {
             .build()
     private val zhihuApi= retrofit.create(ZhihuApi::class.java)
 
-     //获取最新日报列表
+     //获取最新新闻
     fun getLatestNews(id: Int): Observable<LatestNewsResponse> {
         return zhihuApi.getLatestNews()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    //获取过去日报列表
+    //获取以往新闻
     fun getBeforeNews(date: String): Observable<BeforeNewsResponse> {
         return zhihuApi.getBeforeNews(date)
             .subscribeOn(Schedulers.io())

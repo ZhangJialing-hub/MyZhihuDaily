@@ -41,15 +41,13 @@ object DateUtil {
         }
         return "${date.year}年${date.monthValue}月${date.dayOfMonth}日 $weekday"
     }
+
     fun getPreviousDay(dateStr: String?): String? {
         if (dateStr.isNullOrBlank()) return null
         return try {
-            val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-            val date = sdf.parse(dateStr)
-            val calendar = Calendar.getInstance()
-            calendar.time = date
-            calendar.add(Calendar.DAY_OF_MONTH, -1)
-            sdf.format(calendar.time)
+            val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val date = LocalDate.parse(dateStr, formatter)
+            date.minusDays(1).format(formatter)
         } catch (e: Exception) {
             null
         }

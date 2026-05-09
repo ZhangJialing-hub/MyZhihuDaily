@@ -35,8 +35,8 @@ class DetailViewModel : ViewModel() {
 
     //新闻额外信息
     private val _newsExtraInfo = MutableLiveData<NewsDetailResponse>()
-    val newsExtraInfo: LiveData<NewsDetailResponse> =
-        _newsExtraInfo
+    val newsExtraInfo: LiveData<NewsDetailResponse>
+        get()=_newsExtraInfo
     //长评论
     private val _longComments = MutableLiveData<LongCommentsResponse>()
     val longComments: LiveData<LongCommentsResponse>
@@ -53,23 +53,19 @@ class DetailViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                // onNext
                 _newsDetail.postValue(it)
             }, {
-                // onError
                 Log.d("DetailViewModel", "详情错误：${it.message}")
             })
     }
     fun loadBeforeNews(date: String) {
-        NetRepository
-            .getBeforeNews(date)
+        NetRepository.getBeforeNews(date)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _beforeNewsDetail.postValue(it)
             }, {
-                Log
-                    .d("DetailVM", "加载历史新闻失败：${it.message}")
+                Log.d("DetailViewModel", "加载历史新闻失败：${it.message}")
             })
     }
     fun loadNewsExtraInfo(id: Int) {
