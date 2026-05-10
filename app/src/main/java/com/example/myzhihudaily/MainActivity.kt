@@ -18,12 +18,6 @@ import com.example.myzhihudaily.ui.detail.DetailScreen
 import com.example.myzhihudaily.ui.Main.HomeScreen
 import com.example.myzhihudaily.ui.theme.MyZhihuDailyTheme
 import com.example.myzhihudaily.viewmodel.MainViewModel
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
-import androidx.compose.material3.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

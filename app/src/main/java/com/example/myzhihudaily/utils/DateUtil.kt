@@ -17,9 +17,6 @@ package com.example.myzhihudaily.utils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 object DateUtil {
 

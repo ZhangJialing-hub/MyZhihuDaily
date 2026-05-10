@@ -134,10 +134,9 @@ fun DetailScreen(
                         }
                     }
                     targetUrl?.let { url ->
-                        webView.stopLoading() // 先停止当前加载
-                        webView.loadUrl(url)  // 再重新加载
+                        webView.stopLoading()
+                        webView.loadUrl(url)
                     } ?: run {
-                        // 如果 URL 为空，清空 WebView 避免显示旧内容
                         webView.loadData("<html><body></body></html>", "text/html", "utf-8")
                     }
                 },
